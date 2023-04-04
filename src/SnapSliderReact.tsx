@@ -24,6 +24,7 @@ export const SnapSlider: React.FC<{
   count: number;
   index?: number;
   className?: string;
+  sliderClassName?: string;
   onChangeIndex?: (index: number) => void;
   countHash?: string;
   debug?: boolean;
@@ -33,6 +34,7 @@ export const SnapSlider: React.FC<{
   count: _count,
   index: _index,
   className,
+  sliderClassName,
   onChangeIndex,
   countHash,
   circular,
@@ -78,7 +80,10 @@ export const SnapSlider: React.FC<{
           </svg>
         </Button>
         <div
-          className="flex-1 flex scroll-smooth snap-x snap-mandatory overflow-x-auto w-full"
+          className={classnames(
+            "flex-1 flex scroll-smooth snap-x snap-mandatory overflow-x-auto w-full",
+            sliderClassName
+          )}
           ref={ref}
         >
           {children}

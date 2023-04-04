@@ -59,7 +59,10 @@ const examples: TSnapSliderExample[] = [
 function App() {
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-4">Snap-slider</h1>
+      <h1 className="text-3xl font-bold mb-0">use-snap-slider</h1>
+      <p className="text-lg mb-4">
+        <strong>use-snap-slider</strong> - react hook to manage css snap sliders
+      </p>
       {examples.map((data, i) => (
         <Slider key={i} data={data} />
       ))}
@@ -95,11 +98,10 @@ const Slider: React.FC<{
         count={slideItems.length}
         circular={circular}
         countHash={slide.countHash}
-        className="-mx-2"
       >
         {slideItems.map((slide, j) => (
           <SnapSliderItem className={classNames("px-2", cssClass)} key={j}>
-            <div className="w-full aspect-square flex items-center justify-center bg-red-500 text-white">
+            <div className="w-full h-[200px] rounded-md flex items-center justify-center bg-red-500 text-white">
               {slide + 1}
             </div>
           </SnapSliderItem>

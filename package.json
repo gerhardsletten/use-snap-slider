@@ -1,7 +1,7 @@
 {
   "name": "use-snap-slider",
   "version": "0.0.1",
-  "description": "React hook to use css snap slider",
+  "description": "React hook to manage css snap sliders",
   "type": "module",
   "main": "./dist/use-snap-slider.cjs.js",
   "module": "./dist/use-snap-slider.es.js",
@@ -9,6 +9,10 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gerhardsletten/use-snap-slider.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

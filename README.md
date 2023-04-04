@@ -1,3 +1,3 @@
-# Css snap slider
+# use-snap-slider
 
-JS helper for css-snap-sliders
+React hook to manage css snap sliders
