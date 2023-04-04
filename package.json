@@ -1,24 +1,18 @@
 {
-  "name": "snap-slider",
+  "name": "use-snap-slider",
   "version": "0.0.1",
+  "description": "React hook to use css snap slider",
   "type": "module",
-  "emitDeclarationOnly": true,
-  "declaration": true,
-  "main": "./dist/snap-slider.cjs.js",
-  "module": "./dist/snap-slider.es.js",
-  "types": "./dist/snap-slider.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/snap-slider.es.js",
-      "require": "./dist/snap-slider.cjs.js"
-    }
-  },
+  "main": "./dist/use-snap-slider.cjs.js",
+  "module": "./dist/use-snap-slider.es.js",
+  "types": "./dist/use-snap-slider.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "prepare": "npm run build",
     "build-vercel": "tsc && vite build --config vite.config.vercel.ts",
     "preview": "vite preview"
   },

@@ -13,7 +13,6 @@ export function createSnapSliderVanilla(element: HTMLElement) {
   const btnClassActive = element.getAttribute("data-nav-btn-active");
   const { jumpTo, goNext, goPrev, subscribe } = createSnapSlider({
     element,
-    // itemSelector: "article",
     count: count,
     index: 0,
   });

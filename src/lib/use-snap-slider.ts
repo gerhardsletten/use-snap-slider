@@ -22,7 +22,7 @@ export function useSnapSlider(
       count,
       index,
       circular,
-      initalSubscritionPublish: false,
+      initalSubscriptionPublish: false,
     })
   );
   const result = observer.getState(count, index);

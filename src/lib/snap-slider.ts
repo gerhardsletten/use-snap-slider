@@ -27,7 +27,7 @@ export type TSnapListner = (params: TSnapSliderStateFull) => void;
 export interface TSnapSliderParams extends TSnapSliderStateUpdate {
   element: HTMLElement | null;
   itemSelector?: string;
-  initalSubscritionPublish?: boolean;
+  initalSubscriptionPublish?: boolean;
   circular?: boolean;
 }
 
@@ -51,7 +51,7 @@ export function createSnapSlider({
   index = 0,
   circular,
   indexDelta,
-  initalSubscritionPublish = true,
+  initalSubscriptionPublish = true,
   itemSelector = ":scope > *",
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index;
@@ -118,7 +118,7 @@ export function createSnapSlider({
       nextEnabled: circular || countDelta - slidesPerPage > indexDelta,
     };
   };
-  let initalPublish = !initalSubscritionPublish;
+  let initalPublish = !initalSubscriptionPublish;
   function update(params: TSnapSliderStateUpdate = {}) {
     let dirty = false;
     let indexDeltaDirty = false;
@@ -168,24 +168,18 @@ export function createSnapSlider({
     const count = Math.ceil(contentWidth / element.offsetWidth);
     const countDelta = itemPositions.length;
     const { index } = state;
-    const updateIndexExtra =
+    // Reset index if out of bound on updated count
+    const resetIndexMayby =
       index + 1 > count
         ? {
             index: 0,
             indexDelta: 0,
           }
         : {};
-    index + 1 > count &&
-      console.log("calc", {
-        check: index + 1 > count,
-        count,
-        countDelta,
-        index,
-      });
     update({
       count,
       countDelta,
-      ...updateIndexExtra,
+      ...resetIndexMayby,
     });
   }
 
