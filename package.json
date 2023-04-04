@@ -13,6 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/gerhardsletten/use-snap-slider.git"
   },
+  "homepage": "https://use-snap-slider.vercel.app",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
