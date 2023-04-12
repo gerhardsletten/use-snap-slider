@@ -7,7 +7,6 @@ export function createSnapSliderVanilla(element: HTMLElement) {
   const prevBtn = container?.querySelector('[data-prev]')
   const pagina = container?.querySelector('[data-pagina]')
   const btnClass = pagina?.getAttribute('data-btn-class')
-  const btnClassActive = pagina?.getAttribute('data-btn-class-active')
   const { jumpTo, goNext, goPrev, subscribe } = createSnapSlider({
     element,
     count: count,
@@ -27,10 +26,12 @@ export function createSnapSliderVanilla(element: HTMLElement) {
     if (pagina) {
       pagina.innerHTML = ''
       for (let i = 0; i < obj.count; i++) {
-        const classes = `${btnClass} ${i === obj.index ? btnClassActive : ''}`
         const button = document.createElement('button')
         button.addEventListener('click', () => jumpTo(i))
-        button.className = classes
+        if (i === obj.index) {
+          button.setAttribute('disabled', 'true')
+        }
+        button.className = `${btnClass}`
         pagina.append(button)
       }
     }

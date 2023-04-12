@@ -16,8 +16,8 @@ const Button: React.FC<{
   </button>
 )
 
-export const paginaBtnClass = 'h-4 w-4 border-2 border-black rounded-full'
-export const paginaBtnClassActive = 'bg-black'
+export const paginaBtnClass =
+  'h-4 w-4 border-2 border-black rounded-full disabled:bg-black'
 
 export const SnapSlider: React.FC<{
   children: React.ReactNode

@@ -3,11 +3,7 @@ import classnames from 'classnames'
 
 import { useSnapSlider } from '../lib/use-snap-slider'
 import { makeArray } from '../helpers/utils'
-import {
-  SnapSlider,
-  paginaBtnClass,
-  paginaBtnClassActive,
-} from '../shared/SnapSlider'
+import { SnapSlider, paginaBtnClass } from '../shared/SnapSlider'
 
 export const SnapSliderReact: React.FC<{
   children: React.ReactNode
@@ -78,10 +74,8 @@ export const SnapSliderReact: React.FC<{
           {pages.map((page) => (
             <button
               key={page}
-              className={classnames(
-                paginaBtnClass,
-                index === page && paginaBtnClassActive
-              )}
+              className={paginaBtnClass}
+              disabled={index === page}
               onClick={() => jumpTo(page)}
             />
           ))}

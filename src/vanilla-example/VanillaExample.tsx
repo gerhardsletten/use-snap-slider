@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react'
-import classNames from 'classnames'
 import { createSnapSliderVanilla } from './create-snap-slider'
 
 import {
   SnapSlider,
   SnapSliderItem,
   paginaBtnClass,
-  paginaBtnClassActive,
 } from '../shared/SnapSlider'
 import { Slide } from '../shared/Slide'
 import { makeArray } from '../helpers/utils'
@@ -45,7 +43,6 @@ function VanillaExample() {
         dotNavProps={{
           'data-pagina': true,
           'data-btn-class': paginaBtnClass,
-          'data-btn-class-active': paginaBtnClassActive,
         }}
       >
         {slideItems.map((slide, j) => (
