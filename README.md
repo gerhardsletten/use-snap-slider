@@ -32,8 +32,8 @@ export function MySlider () {
   const ref = useRef<HTMLDivElement | null>(null)
   const slides = [1,2]
   // Passing inital count avoid extra render, for best lighthouse score, pass the same count as you show on mobile
-  const state = useSnapSlider(ref, slides.count)
-  const pages = Array.from(Array(state.count).keys())
+  const {index, count, jumpTo, goPrev, goNext, prevEnabled, nextEnabled} = useSnapSlider(ref, slides.length)
+  const pages = Array.from(Array(count).keys())
   return (
     <div>
       <div className="flex scroll-smooth snap-x snap-mandatory overflow-x-auto w-full" ref={ref}>
@@ -45,12 +45,12 @@ export function MySlider () {
       </div>
       <nav aria-label="Pages navigation">
         {pages.map((page) => (
-          <button onClick={() => state.jumpTo(page)} disabled={page === state.index}>{page + 1}</button>
+          <button onClick={() => jumpTo(page)} disabled={page === index}>{page + 1}</button>
         ))}
       </nav>
       <nav aria-label="Prev / Next navigation">
-        <button onClick={state.goPrev} disabled={!state.prevEnabled}>Prev</button>
-        <button onClick={state.goNext} disabled={!state.nextEnabled}>Next</button>
+        <button onClick={goPrev} disabled={!prevEnabled}>Prev</button>
+        <button onClick={goNext} disabled={!nextEnabled}>Next</button>
       </nav>
     </div>
   )
