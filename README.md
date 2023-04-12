@@ -36,7 +36,7 @@ export function MySlider () {
   const pages = Array.from(Array(count).keys())
   return (
     <div>
-      <div className="flex scroll-smooth snap-x snap-mandatory overflow-x-auto w-full" ref={ref}>
+      <div className="flex scroll-smooth snap-x snap-mandatory overflow-x-auto" ref={ref}>
         {slides.map((slide) => (
           <div key={slide} className="flex snap-start shrink-0 w-full md:w-1/2">
             Slide {slide}
