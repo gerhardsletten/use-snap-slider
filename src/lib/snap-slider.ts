@@ -1,47 +1,47 @@
-import { throttle } from "./throttle";
+import { throttle } from './throttle'
 
 export interface TSnapListnerStateIndex {
-  index: number;
-  indexDelta: number;
+  index: number
+  indexDelta: number
 }
 
 export interface TSnapSliderState extends TSnapListnerStateIndex {
-  count: number;
-  countDelta: number;
+  count: number
+  countDelta: number
 }
 
 interface TSnapSliderStateUpdate {
-  index?: number;
-  indexDelta?: number;
-  count?: number;
-  countDelta?: number;
+  index?: number
+  indexDelta?: number
+  count?: number
+  countDelta?: number
 }
 
 export interface TSnapSliderStateFull extends TSnapSliderState {
-  prevEnabled: boolean;
-  nextEnabled: boolean;
+  prevEnabled: boolean
+  nextEnabled: boolean
 }
 
-export type TSnapListner = (params: TSnapSliderStateFull) => void;
+export type TSnapListner = (params: TSnapSliderStateFull) => void
 
 export interface TSnapSliderParams extends TSnapSliderStateUpdate {
-  element: HTMLElement | null;
-  itemSelector?: string;
-  initalSubscriptionPublish?: boolean;
-  circular?: boolean;
+  element: HTMLElement | null
+  itemSelector?: string
+  // initalSubscriptionPublish?: boolean
+  circular?: boolean
 }
 
-export type TSnapSliderJumpToFn = (index?: number, indexDelta?: number) => void;
+export type TSnapSliderJumpToFn = (index?: number, indexDelta?: number) => void
 
 export interface TSnapSlider {
-  destroy: () => void;
-  getState: (count?: number, index?: number) => TSnapSliderStateFull;
-  jumpTo: TSnapSliderJumpToFn;
-  goNext: () => void;
-  goPrev: () => void;
-  subscribe: (fn: TSnapListner) => () => void;
-  setElement: (el: HTMLElement) => void;
-  calculate: () => void;
+  destroy: () => void
+  getState: (count?: number, index?: number) => TSnapSliderStateFull
+  jumpTo: TSnapSliderJumpToFn
+  goNext: () => void
+  goPrev: () => void
+  subscribe: (fn: TSnapListner) => () => void
+  setElement: (el: HTMLElement) => void
+  calculate: () => void
 }
 
 export function createSnapSlider({
@@ -51,181 +51,183 @@ export function createSnapSlider({
   index = 0,
   circular,
   indexDelta,
-  initalSubscriptionPublish = true,
-  itemSelector = ":scope > *",
+  // initalSubscriptionPublish = true,
+  itemSelector = ':scope > *',
 }: TSnapSliderParams): TSnapSlider {
-  let initalIndex: number | undefined = index;
+  let initalIndex: number | undefined = index
   let state: TSnapSliderState = {
     index,
     indexDelta: indexDelta || index,
     count,
     countDelta: countDelta || count,
-  };
-  let prevIndexDelta: number = index;
-  let slidesPerPage: number = 1;
-  let itemPositions: number[] = [];
-  let muteScrollListner: boolean = false;
-  let left: number = 0;
-  let element: HTMLElement | null;
+  }
+  let prevIndexDelta: number = index
+  let slidesPerPage: number = 1
+  let itemPositions: number[] = []
+  let muteScrollListner: boolean = false
+  let left: number = 0
+  let element: HTMLElement | null
   function updateIndexDelta() {
-    if (!element) {
-      return;
-    }
-    const prev = element.scrollLeft;
-    const { indexDelta } = state;
-    left = indexDelta * (element.offsetWidth / slidesPerPage);
-    if (prevIndexDelta !== indexDelta) {
-      const distance = Math.abs(prev - left);
-      const limitInstantScroll = element.offsetWidth * 2;
-      prevIndexDelta = indexDelta;
-      muteScrollListner = true;
-      element.scroll({
-        left,
-        top: 0,
-        behavior: distance > limitInstantScroll ? "smooth" : undefined,
-      });
-    } else {
-      if (initalIndex) {
-        muteScrollListner = true;
+    if (element) {
+      const prev = element.scrollLeft
+      const { indexDelta } = state
+      left = indexDelta * (element.offsetWidth / slidesPerPage)
+      if (prevIndexDelta !== indexDelta) {
+        const distance = Math.abs(prev - left)
+        const limitInstantScroll = element.offsetWidth * 2
+        prevIndexDelta = indexDelta
+        muteScrollListner = true
         element.scroll({
           left,
           top: 0,
-        });
-        initalIndex = undefined;
+          behavior: distance > limitInstantScroll ? 'smooth' : undefined,
+        })
+      } else {
+        if (initalIndex) {
+          muteScrollListner = true
+          element.scroll({
+            left,
+            top: 0,
+          })
+          initalIndex = undefined
+        }
       }
     }
   }
-  let listeners: TSnapListner[] = [];
+
+  let publishDirty = false
+  let listeners: TSnapListner[] = []
   const subscribe = (callback: TSnapListner) => {
-    listeners.push(callback);
+    listeners.push(callback)
+    if (publishDirty) {
+      callback(getState())
+    }
     return () => {
-      listeners = listeners.filter((x) => x !== callback);
+      listeners = listeners.filter((x) => x !== callback)
       if (listeners.length < 1) {
-        destroy();
+        destroy()
       }
-    };
-  };
+    }
+  }
   function notify() {
     listeners.forEach((callback) => {
-      callback(getState());
-    });
+      callback(getState())
+    })
   }
   const getState = (): TSnapSliderStateFull => {
-    const { indexDelta, countDelta } = state;
+    const { indexDelta, countDelta } = state
     return {
       ...state,
       prevEnabled: circular || indexDelta > 0,
       nextEnabled: circular || countDelta - slidesPerPage > indexDelta,
-    };
-  };
-  let initalPublish = !initalSubscriptionPublish;
-  function update(params: TSnapSliderStateUpdate = {}) {
-    let dirty = false;
-    let indexDeltaDirty = false;
-    type TSnapSliderStateUpdateKey = keyof typeof params;
+    }
+  }
+  function update(params: TSnapSliderStateUpdate) {
+    let dirty = false
+    let indexDeltaDirty = false
+    type TSnapSliderStateUpdateKey = keyof typeof params
     const keys: TSnapSliderStateUpdateKey[] = Object.keys(
       params
-    ) as Array<TSnapSliderStateUpdateKey>;
+    ) as Array<TSnapSliderStateUpdateKey>
     keys.forEach((key) => {
       if (state[key] !== params[key]) {
-        state[key] = Number(params[key]);
-        dirty = true;
-        if (key === "indexDelta") {
-          indexDeltaDirty = true;
+        state[key] = Number(params[key])
+        dirty = true
+        if (key === 'indexDelta') {
+          indexDeltaDirty = true
         }
       }
-    });
-    if (dirty || !initalPublish) {
-      initalPublish = true;
-      notify();
+    })
+    if (dirty) {
+      publishDirty = listeners.length === 0
+      notify()
       if (indexDeltaDirty) {
-        updateIndexDelta();
+        updateIndexDelta()
       }
     }
   }
   function fixIndex(nextIndex: TSnapListnerStateIndex): TSnapListnerStateIndex {
-    const { index, indexDelta } = nextIndex;
-    const { countDelta, count } = state;
-    const last = countDelta - slidesPerPage;
+    const { index, indexDelta } = nextIndex
+    const { countDelta, count } = state
+    const last = countDelta - slidesPerPage
     return {
       index: indexDelta < last ? index : count - 1,
       indexDelta,
-    };
+    }
   }
   function calculate() {
-    if (!element) {
-      return;
+    if (element) {
+      let contentWidth = 0
+      let itemWidth = 0
+      itemPositions = []
+      element.querySelectorAll(itemSelector).forEach((slide) => {
+        itemPositions.push(contentWidth)
+        contentWidth += slide.clientWidth
+        itemWidth = slide.clientWidth
+      })
+      slidesPerPage = Math.round(element.offsetWidth / itemWidth)
+      const countDelta = itemPositions.length
+      const count = Math.ceil(countDelta / slidesPerPage)
+      const { index } = state
+      // Reset index if out of bound on updated count
+      const resetIndexMayby =
+        index + 1 > count
+          ? {
+              index: 0,
+              indexDelta: 0,
+            }
+          : {}
+      update({
+        count,
+        countDelta,
+        ...resetIndexMayby,
+      })
     }
-    let contentWidth = 0;
-    let itemWidth = 0;
-    itemPositions = [];
-    element.querySelectorAll(itemSelector).forEach((slide) => {
-      itemPositions.push(contentWidth);
-      contentWidth += slide.clientWidth;
-      itemWidth = slide.clientWidth;
-    });
-    slidesPerPage = Math.round(element.offsetWidth / itemWidth);
-    const count = Math.ceil(contentWidth / element.offsetWidth);
-    const countDelta = itemPositions.length;
-    const { index } = state;
-    // Reset index if out of bound on updated count
-    const resetIndexMayby =
-      index + 1 > count
-        ? {
-            index: 0,
-            indexDelta: 0,
-          }
-        : {};
-    update({
-      count,
-      countDelta,
-      ...resetIndexMayby,
-    });
   }
 
-  let ticking = false;
+  let ticking = false
   function onScroll() {
     if (!ticking && element) {
-      const scrollLeft = element.scrollLeft;
+      const scrollLeft = element.scrollLeft
       window.requestAnimationFrame(() => {
         if (muteScrollListner) {
-          const leftToScroll = Math.abs(left - scrollLeft);
+          const leftToScroll = Math.abs(left - scrollLeft)
           if (leftToScroll < 1) {
-            muteScrollListner = false;
+            muteScrollListner = false
           }
         } else {
           const positionItem = itemPositions.reduce((prev, curr) => {
             return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
               ? curr
-              : prev;
-          });
-          const indexDelta = itemPositions.findIndex((x) => x === positionItem);
-          prevIndexDelta = indexDelta;
+              : prev
+          })
+          const indexDelta = itemPositions.findIndex((x) => x === positionItem)
+          prevIndexDelta = indexDelta
           update(
             fixIndex({
               index: Math.floor(indexDelta / slidesPerPage),
               indexDelta,
             })
-          );
+          )
         }
-        ticking = false;
-      });
-      ticking = true;
+        ticking = false
+      })
+      ticking = true
     }
   }
-  const onScrollFn = throttle(onScroll, 200);
-  const onResizeFn = throttle(calculate, 200);
+  const onScrollFn = throttle(onScroll, 200)
+  const onResizeFn = throttle(calculate, 500)
   function setElement(_el: HTMLElement) {
     if (element) {
-      destroy();
+      destroy()
     }
-    element = _el;
-    updateIndexDelta();
-    calculate();
-    element?.addEventListener("scroll", onScrollFn);
-    window.addEventListener("resize", onResizeFn);
+    element = _el
+    updateIndexDelta()
+    calculate()
+    element?.addEventListener('scroll', onScrollFn)
+    window.addEventListener('resize', onResizeFn)
   }
-  _element && setElement(_element);
+  _element && setElement(_element)
   const jumpTo: TSnapSliderJumpToFn = function (index, indexDelta) {
     if (indexDelta !== undefined) {
       update(
@@ -233,7 +235,7 @@ export function createSnapSlider({
           index: Math.floor(indexDelta / slidesPerPage),
           indexDelta,
         })
-      );
+      )
     }
     if (index !== undefined) {
       update(
@@ -241,35 +243,35 @@ export function createSnapSlider({
           index,
           indexDelta: index * slidesPerPage,
         })
-      );
+      )
     }
-  };
+  }
   const destroy = () => {
-    element?.removeEventListener("scroll", onScrollFn);
-    window.removeEventListener("resize", onResizeFn);
-  };
+    element?.removeEventListener('scroll', onScrollFn)
+    window.removeEventListener('resize', onResizeFn)
+  }
   const goNext = () => {
-    const { countDelta, indexDelta } = state;
-    const last = countDelta - slidesPerPage;
+    const { countDelta, indexDelta } = state
+    const last = countDelta - slidesPerPage
     const next =
       indexDelta + slidesPerPage <= last
         ? indexDelta + slidesPerPage
         : circular && indexDelta === last
         ? 0
-        : last;
-    jumpTo(undefined, next);
-  };
+        : last
+    jumpTo(undefined, next)
+  }
   const goPrev = () => {
-    const { indexDelta, countDelta } = state;
-    const last = countDelta - slidesPerPage;
+    const { indexDelta, countDelta } = state
+    const last = countDelta - slidesPerPage
     const next =
       indexDelta - slidesPerPage >= 0
         ? indexDelta - slidesPerPage
         : circular && indexDelta === 0
         ? last
-        : 0;
-    jumpTo(undefined, next);
-  };
+        : 0
+    jumpTo(undefined, next)
+  }
   return {
     destroy,
     getState,
@@ -279,5 +281,5 @@ export function createSnapSlider({
     calculate,
     goNext,
     goPrev,
-  };
+  }
 }
