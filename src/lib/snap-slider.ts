@@ -27,7 +27,6 @@ export type TSnapListner = (params: TSnapSliderStateFull) => void
 export interface TSnapSliderParams extends TSnapSliderStateUpdate {
   element: HTMLElement | null
   itemSelector?: string
-  // initalSubscriptionPublish?: boolean
   circular?: boolean
 }
 
@@ -35,7 +34,7 @@ export type TSnapSliderJumpToFn = (index?: number, indexDelta?: number) => void
 
 export interface TSnapSlider {
   destroy: () => void
-  getState: (count?: number, index?: number) => TSnapSliderStateFull
+  getState: () => TSnapSliderStateFull
   jumpTo: TSnapSliderJumpToFn
   goNext: () => void
   goPrev: () => void
@@ -51,7 +50,6 @@ export function createSnapSlider({
   index = 0,
   circular,
   indexDelta,
-  // initalSubscriptionPublish = true,
   itemSelector = ':scope > *',
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index
@@ -169,7 +167,6 @@ export function createSnapSlider({
       const countDelta = itemPositions.length
       const count = Math.ceil(countDelta / slidesPerPage)
       const { index } = state
-      // Reset index if out of bound on updated count
       const resetIndexMayby =
         index + 1 > count
           ? {

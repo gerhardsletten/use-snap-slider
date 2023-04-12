@@ -22,10 +22,9 @@ export function useSnapSlider(
       count,
       index,
       circular,
-      // initalSubscriptionPublish: false,
     })
   )
-  const result = observer.getState(count, index)
+  const result = observer.getState()
   useEffect(() => {
     if (mountedRef.current) {
       observer.jumpTo(0)

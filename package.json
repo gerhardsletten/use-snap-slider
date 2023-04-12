@@ -17,6 +17,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.prod.json && vite build",
+    "build::source": "DISABLE_MINIFY=1 npm run build",
     "prepare": "npm run build",
     "build-vercel": "tsc -p tsconfig.prod.json && vite build --config vite.config.vercel.ts",
     "preview": "vite preview",

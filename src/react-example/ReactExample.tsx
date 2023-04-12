@@ -47,7 +47,7 @@ const examples: TSnapSliderExample[] = [
   {
     name: 'Example 3 - handling of external filter / change of slide-count',
     description:
-      "Change in filter moves index to 0 since 'use-snap-slider' does this when count changes. But for if 2 filters have the same count, you will need to add your own logic in your component (see next example)",
+      "Change in filter moves index to 0 since 'use-snap-slider' does this when count changes. But for if 2 filters have the same count, you will need to pass a countHash (see next example)",
     cssClass: 'w-1/3',
     circular: false,
     slides: [
