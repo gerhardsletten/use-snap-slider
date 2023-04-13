@@ -27,6 +27,7 @@ export type TSnapListner = (params: TSnapSliderStateFull) => void
 export interface TSnapSliderParams extends TSnapSliderStateUpdate {
   element: HTMLElement | null
   itemSelector?: string
+  initalSubscriptionPublish?: boolean
   circular?: boolean
 }
 
@@ -50,6 +51,7 @@ export function createSnapSlider({
   index = 0,
   circular,
   indexDelta,
+  initalSubscriptionPublish = true,
   itemSelector = ':scope > *',
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index
@@ -75,10 +77,13 @@ export function createSnapSlider({
         const limitInstantScroll = element.offsetWidth * 2
         prevIndexDelta = indexDelta
         muteScrollListner = true
+        // @ts-expect-error [mildly irritated message]
+        const behavior: ScrollBehavior =
+          distance > limitInstantScroll ? 'instant' : 'smooth'
         element.scroll({
           left,
           top: 0,
-          behavior: distance > limitInstantScroll ? 'smooth' : undefined,
+          behavior,
         })
       } else {
         if (initalIndex) {
@@ -86,6 +91,8 @@ export function createSnapSlider({
           element.scroll({
             left,
             top: 0,
+            // @ts-expect-error [mildly irritated message]
+            behavior: 'instant',
           })
           initalIndex = undefined
         }
@@ -97,7 +104,7 @@ export function createSnapSlider({
   let listeners: TSnapListner[] = []
   const subscribe = (callback: TSnapListner) => {
     listeners.push(callback)
-    if (publishDirty) {
+    if (element && (publishDirty || initalSubscriptionPublish)) {
       callback(getState())
     }
     return () => {
@@ -189,7 +196,7 @@ export function createSnapSlider({
       window.requestAnimationFrame(() => {
         if (muteScrollListner) {
           const leftToScroll = Math.abs(left - scrollLeft)
-          if (leftToScroll < 1) {
+          if (leftToScroll < 2) {
             muteScrollListner = false
           }
         } else {

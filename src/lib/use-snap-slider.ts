@@ -22,6 +22,7 @@ export function useSnapSlider(
       count,
       index,
       circular,
+      initalSubscriptionPublish: false,
     })
   )
   const result = observer.getState()

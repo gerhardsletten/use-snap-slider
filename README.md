@@ -132,6 +132,8 @@ const {
   setElement: (el: HTMLElement) => void,
   // Updates count and countDelta, call if you change inner slides
   calculate: () => void,
+  // Should subscribe return a inital publish after subscribing
+  initalSubscriptionPublish: boolean = true
 } = createSnapSlider({
   element: HTMLDivElement | null,
   count?:number = 1,
@@ -177,7 +179,7 @@ See also tailwinds own documentation for [scroll snap](https://tailwindcss.com/d
   -webkit-overflow-scrolling: touch;
 }
 .css-slider::-webkit-scrollbar {
-  @apply hidden;
+  display: none;
 }
 .css-slider-item {
   display: flex;
