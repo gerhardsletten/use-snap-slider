@@ -22,7 +22,10 @@ export default defineConfig({
         'snap-slider': 'src/lib/snap-slider.ts',
         'use-snap-slider': 'src/lib/use-snap-slider.ts',
       },
-      fileName: (format, entryName) => `${entryName}.${format}.js`,
+      fileName: (format, entryName) => {
+        const ext = format === 'es' ? '.js' : ''
+        return `${entryName}.${format}${ext}`
+      },
     },
     rollupOptions: {
       external: /^react/,

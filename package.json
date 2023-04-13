@@ -3,7 +3,7 @@
   "version": "0.0.5",
   "description": "React hook to manage css snap sliders",
   "type": "module",
-  "main": "./dist/use-snap-slider.cjs.js",
+  "main": "./dist/use-snap-slider.cjs",
   "module": "./dist/use-snap-slider.es.js",
   "types": "./dist/use-snap-slider.d.ts",
   "files": [
