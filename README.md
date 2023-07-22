@@ -2,6 +2,8 @@
 
 React hook / Vanilla JS to manage scroll-state for [CSS Scroll Snap](https://caniuse.com/?search=scroll-snap)
 
+![](https://img.shields.io/bundlephobia/min/use-snap-slider)
+
 Gives you states and actions for CSS Scroll Snap sliders:
 
 * `count:number` - total pages
@@ -112,7 +114,7 @@ const {
 )
 ```
 
-### useSnapSlider react hook
+### createSnapSlider vanilla js function
 
 ```ts
 import { createSnapSlider } from 'use-snap-slider/dist/snap-slider'
