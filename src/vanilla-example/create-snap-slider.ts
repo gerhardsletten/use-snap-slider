@@ -1,4 +1,4 @@
-import { createSnapSlider } from '../lib/snap-slider'
+import { createSnapSlider } from '../../lib/snap-slider'
 
 export function createSnapSliderVanilla(element: HTMLElement) {
   const container = element.closest('[data-slider-container]')

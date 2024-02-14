@@ -1,8 +1,7 @@
 import { screen, waitFor, fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import { createSnapSlider, TSnapSliderStateFull } from '../snap-slider'
-
-import { makeSlides, mockHelper, resizeWindow } from '../../helpers/utils'
+import { createSnapSlider, type TSnapSliderStateFull } from '../snap-slider'
+import { makeSlides, mockHelper, resizeWindow } from '../../src/helpers/utils'
 
 const TEST_ID = 'slider'
 

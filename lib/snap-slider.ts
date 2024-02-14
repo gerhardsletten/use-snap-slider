@@ -77,7 +77,6 @@ export function createSnapSlider({
         const limitInstantScroll = element.offsetWidth * 2
         prevIndexDelta = indexDelta
         muteScrollListner = true
-        // @ts-expect-error [mildly irritated message]
         const behavior: ScrollBehavior =
           distance > limitInstantScroll ? 'instant' : 'smooth'
         element.scroll({
@@ -91,7 +90,6 @@ export function createSnapSlider({
           element.scroll({
             left,
             top: 0,
-            // @ts-expect-error [mildly irritated message]
             behavior: 'instant',
           })
           initalIndex = undefined

@@ -1,5 +1,5 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
-import { createSnapSlider, TSnapSliderStateFull } from './snap-slider'
+import { type MutableRefObject, useEffect, useRef, useState } from 'react'
+import { createSnapSlider, type TSnapSliderStateFull } from './snap-slider'
 
 export interface TUseSnapSlider extends TSnapSliderStateFull {
   jumpTo: (index: number) => void

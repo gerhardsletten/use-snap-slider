@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react'
-import classnames from 'classnames'
 
-import { useSnapSlider } from '../lib/use-snap-slider'
+import { useSnapSlider } from '../../lib/use-snap-slider'
 import { makeArray } from '../helpers/utils'
 import { SnapSlider, paginaBtnClass } from '../shared/SnapSlider'
 

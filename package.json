@@ -6,6 +6,28 @@
   "main": "./dist/use-snap-slider.cjs",
   "module": "./dist/use-snap-slider.es.js",
   "types": "./dist/use-snap-slider.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/use-snap-slider.d.ts",
+        "default": "./dist/use-snap-slider.es.js"
+      },
+      "require": {
+        "types": "./dist/use-snap-slider.d.ts",
+        "default": "./dist/use-snap-slider.cjs"
+      }
+    },
+    "./dist/snap-slider": {
+      "import": {
+        "types": "./dist/snap-slider.d.ts",
+        "default": "./dist/snap-slider.es.js"
+      },
+      "require": {
+        "types": "./dist/snap-slider.d.ts",
+        "default": "./dist/snap-slider.cjs"
+      }
+    }
+  },
   "files": [
     "dist"
   ],
@@ -16,7 +38,8 @@
   "homepage": "https://use-snap-slider.vercel.app",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.prod.json && vite build",
+    "clean": "rimraf dist/*",
+    "build": "npm run clean && tsc -p tsconfig.prod.json && vite build --config vite.config.lib.ts",
     "build::source": "DISABLE_MINIFY=1 npm run build",
     "prepare": "npm run build",
     "build-vercel": "tsc -p tsconfig.prod.json && vite build --config vite.config.vercel.ts",
@@ -30,24 +53,25 @@
     "singleQuote": true
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^14.0.0",
-    "@types/jest": "^29.5.0",
-    "@types/node": "^18.15.11",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
-    "autoprefixer": "^10.4.14",
-    "classnames": "^2.3.2",
-    "jest": "^29.5.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "postcss": "^8.4.21",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "classnames": "^2.5.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwindcss": "^3.2.7",
-    "ts-jest": "^29.1.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.2.0",
-    "vite-plugin-dts": "^2.2.0"
+    "rimraf": "^5.0.5",
+    "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.1",
+    "vite-plugin-dts": "^3.7.2"
   }
 }
