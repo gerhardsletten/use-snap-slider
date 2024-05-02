@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
 import '@testing-library/jest-dom'
 
 import { useSnapSlider } from '../use-snap-slider'
