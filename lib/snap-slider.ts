@@ -29,6 +29,7 @@ export interface TSnapSliderParams extends TSnapSliderStateUpdate {
   itemSelector?: string
   initalSubscriptionPublish?: boolean
   circular?: boolean
+  debug?: boolean
 }
 
 export type TSnapSliderJumpToFn = (index?: number, indexDelta?: number) => void
@@ -53,6 +54,7 @@ export function createSnapSlider({
   indexDelta,
   initalSubscriptionPublish = true,
   itemSelector = ':scope > *',
+  debug,
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index
   let state: TSnapSliderState = {
@@ -163,7 +165,8 @@ export function createSnapSlider({
       let contentWidth = 0
       let itemWidth = 0
       itemPositions = []
-      element.querySelectorAll(itemSelector).forEach((slide) => {
+      const slides = element.querySelectorAll<HTMLDivElement>(itemSelector)
+      slides.forEach((slide) => {
         itemPositions.push(contentWidth)
         contentWidth += slide.clientWidth
         itemWidth = slide.clientWidth
@@ -179,11 +182,26 @@ export function createSnapSlider({
               indexDelta: 0,
             }
           : {}
-      update({
-        count,
-        countDelta,
-        ...resetIndexMayby,
-      })
+
+      if (!isNaN(count)) {
+        // if element not mounted / hidden not update
+        update({
+          count,
+          countDelta,
+          ...resetIndexMayby,
+        })
+        debug &&
+          console.log('update count', {
+            count,
+            countDelta,
+            itemPositions,
+            slidesPerPage,
+            clientWidth: element.clientWidth,
+            offsetWidth: element.offsetWidth,
+            itemSelector,
+            slides,
+          })
+      }
     }
   }
 

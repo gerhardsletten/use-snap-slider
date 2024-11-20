@@ -12,10 +12,12 @@ export function useSnapSlider(
   count: number = 1,
   index: number = 0,
   circular = false,
-  countHash?: string | number
+  countHash?: string | number,
+  debug?: boolean
 ): TUseSnapSlider {
   const [, forceUpdate] = useState<number>(0)
-  const mountedRef = useRef<boolean>()
+  const mountedRef = useRef<boolean>(false)
+  const initRef = useRef<boolean>(false)
   const [observer] = useState(() =>
     createSnapSlider({
       element: ref.current,
@@ -23,6 +25,7 @@ export function useSnapSlider(
       index,
       circular,
       initalSubscriptionPublish: false,
+      debug,
     })
   )
   const result = observer.getState()
