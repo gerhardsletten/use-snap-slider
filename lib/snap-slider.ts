@@ -82,7 +82,7 @@ export function createSnapSlider({
   function updateIndexDelta() {
     if (element) {
       const prev = element.scrollLeft
-      const { indexDelta } = state
+      const { indexDelta, event } = state
       left = indexDelta * (element.offsetWidth / slidesPerPage)
       if (prevIndexDelta !== indexDelta) {
         const distance = Math.abs(prev - left)
@@ -90,7 +90,9 @@ export function createSnapSlider({
         prevIndexDelta = indexDelta
         muteScrollListner = true
         const behavior: ScrollBehavior =
-          distance > limitInstantScroll ? 'instant' : 'smooth'
+          distance > limitInstantScroll || event === 'click'
+            ? 'instant'
+            : 'smooth'
         element.scroll({
           left,
           top: 0,
