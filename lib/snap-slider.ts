@@ -1,5 +1,7 @@
 import { throttle } from './throttle'
 
+export type TSnapListnerEvent = 'scroll' | 'click' | 'inital' | 'goto'
+
 export interface TSnapListnerStateIndex {
   index: number
   indexDelta: number
@@ -8,6 +10,7 @@ export interface TSnapListnerStateIndex {
 export interface TSnapSliderState extends TSnapListnerStateIndex {
   count: number
   countDelta: number
+  event: TSnapListnerEvent
 }
 
 interface TSnapSliderStateUpdate {
@@ -15,6 +18,7 @@ interface TSnapSliderStateUpdate {
   indexDelta?: number
   count?: number
   countDelta?: number
+  event: TSnapListnerEvent
 }
 
 export interface TSnapSliderStateFull extends TSnapSliderState {
@@ -24,7 +28,8 @@ export interface TSnapSliderStateFull extends TSnapSliderState {
 
 export type TSnapListner = (params: TSnapSliderStateFull) => void
 
-export interface TSnapSliderParams extends TSnapSliderStateUpdate {
+export interface TSnapSliderParams
+  extends Omit<TSnapSliderStateUpdate, 'event'> {
   element: HTMLElement | null
   itemSelector?: string
   initalSubscriptionPublish?: boolean
@@ -32,7 +37,11 @@ export interface TSnapSliderParams extends TSnapSliderStateUpdate {
   debug?: boolean
 }
 
-export type TSnapSliderJumpToFn = (index?: number, indexDelta?: number) => void
+export type TSnapSliderJumpToFn = (
+  index?: number,
+  indexDelta?: number,
+  event?: TSnapListnerEvent
+) => void
 
 export interface TSnapSlider {
   destroy: () => void
@@ -60,6 +69,7 @@ export function createSnapSlider({
   let state: TSnapSliderState = {
     index,
     indexDelta: indexDelta || index,
+    event: 'inital',
     count,
     countDelta: countDelta || count,
   }
@@ -134,8 +144,9 @@ export function createSnapSlider({
     const keys: TSnapSliderStateUpdateKey[] = Object.keys(
       params
     ) as Array<TSnapSliderStateUpdateKey>
+    state['event'] = params['event']
     keys.forEach((key) => {
-      if (state[key] !== params[key]) {
+      if (key !== 'event' && state[key] !== params[key]) {
         state[key] = Number(params[key])
         dirty = true
         if (key === 'indexDelta') {
@@ -186,6 +197,7 @@ export function createSnapSlider({
       if (!isNaN(count)) {
         // if element not mounted / hidden not update
         update({
+          event: 'inital',
           count,
           countDelta,
           ...resetIndexMayby,
@@ -222,20 +234,24 @@ export function createSnapSlider({
               : prev
           })
           const indexDelta = itemPositions.findIndex((x) => x === positionItem)
+          const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
           prevIndexDelta = indexDelta
-          update(
-            fixIndex({
-              index: Math.floor(indexDelta / slidesPerPage),
-              indexDelta,
+          if (pxLeftScrolling < 2) {
+            update({
+              event: 'scroll',
+              ...fixIndex({
+                index: Math.floor(indexDelta / slidesPerPage),
+                indexDelta,
+              }),
             })
-          )
+          }
         }
         ticking = false
       })
       ticking = true
     }
   }
-  const onScrollFn = throttle(onScroll, 200)
+  const onScrollFn = throttle(onScroll, 500)
   const onResizeFn = throttle(calculate, 500)
   function setElement(_el: HTMLElement) {
     if (element) {
@@ -248,22 +264,28 @@ export function createSnapSlider({
     window.addEventListener('resize', onResizeFn)
   }
   _element && setElement(_element)
-  const jumpTo: TSnapSliderJumpToFn = function (index, indexDelta) {
+  const jumpTo: TSnapSliderJumpToFn = function (
+    index,
+    indexDelta,
+    event = 'goto'
+  ) {
     if (indexDelta !== undefined) {
-      update(
-        fixIndex({
+      update({
+        event,
+        ...fixIndex({
           index: Math.floor(indexDelta / slidesPerPage),
           indexDelta,
-        })
-      )
+        }),
+      })
     }
     if (index !== undefined) {
-      update(
-        fixIndex({
+      update({
+        event,
+        ...fixIndex({
           index,
           indexDelta: index * slidesPerPage,
-        })
-      )
+        }),
+      })
     }
   }
   const destroy = () => {
