@@ -228,46 +228,41 @@ export function createSnapSlider({
     }
   }
 
-  let ticking = false
   function onScroll() {
-    if (!ticking && element) {
+    if (element) {
       const scrollLeft = element.scrollLeft
-      window.requestAnimationFrame(() => {
-        if (muteScrollListner) {
-          const leftToScroll = Math.abs(left - scrollLeft)
-          if (leftToScroll < 2) {
-            muteScrollListner = false
-          }
-        } else {
-          const positionItem = itemPositions.reduce((prev, curr) => {
-            return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
-              ? curr
-              : prev
-          })
-          const indexDelta = itemPositions.findIndex((x) => x === positionItem)
-          const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
-          prevIndexDelta = indexDelta
-          debug &&
-            console.log('onScroll', {
-              pxLeftScrolling,
-              indexDelta,
-              scrollLeft,
-              positionItem,
-              itemPositions,
-            })
-          if (pxLeftScrolling < scrollListenerThreshold) {
-            update({
-              event: 'scroll',
-              ...fixIndex({
-                index: Math.floor(indexDelta / slidesPerPage),
-                indexDelta,
-              }),
-            })
-          }
+      if (muteScrollListner) {
+        const leftToScroll = Math.abs(left - scrollLeft)
+        if (leftToScroll < 2) {
+          muteScrollListner = false
         }
-        ticking = false
-      })
-      ticking = true
+      } else {
+        const positionItem = itemPositions.reduce((prev, curr) => {
+          return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
+            ? curr
+            : prev
+        })
+        const indexDelta = itemPositions.findIndex((x) => x === positionItem)
+        const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
+        prevIndexDelta = indexDelta
+        debug &&
+          console.log('onScroll', {
+            pxLeftScrolling,
+            indexDelta,
+            scrollLeft,
+            positionItem,
+            itemPositions,
+          })
+        if (pxLeftScrolling < scrollListenerThreshold) {
+          update({
+            event: 'scroll',
+            ...fixIndex({
+              index: Math.floor(indexDelta / slidesPerPage),
+              indexDelta,
+            }),
+          })
+        }
+      }
     }
   }
   const onScrollFn = throttle(onScroll, scrollTimeThrottle)
