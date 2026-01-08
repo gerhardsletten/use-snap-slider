@@ -227,7 +227,34 @@ export function createSnapSlider({
       }
     }
   }
-
+  function onScrollEnd() {
+    if (element) {
+      const scrollLeft = element.scrollLeft
+      const positionItem = itemPositions.reduce((prev, curr) => {
+        return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
+          ? curr
+          : prev
+      })
+      const indexDelta = itemPositions.findIndex((x) => x === positionItem)
+      const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
+      prevIndexDelta = indexDelta
+      debug &&
+        console.log('onScrollEnd', {
+          pxLeftScrolling,
+          indexDelta,
+          scrollLeft,
+          positionItem,
+          itemPositions,
+        })
+      update({
+        event: 'scroll',
+        ...fixIndex({
+          index: Math.floor(indexDelta / slidesPerPage),
+          indexDelta,
+        }),
+      })
+    }
+  }
   function onScroll() {
     if (element) {
       const scrollLeft = element.scrollLeft
@@ -274,36 +301,8 @@ export function createSnapSlider({
     element = _el
     updateIndexDelta()
     calculate()
-
     if ('onscrollend' in window) {
-      element?.addEventListener('scrollend', (event) => {
-        if (element) {
-          const scrollLeft = element.scrollLeft
-          const positionItem = itemPositions.reduce((prev, curr) => {
-            return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
-              ? curr
-              : prev
-          })
-          const indexDelta = itemPositions.findIndex((x) => x === positionItem)
-          const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
-          prevIndexDelta = indexDelta
-          debug &&
-            console.log('onScrollEnd', {
-              pxLeftScrolling,
-              indexDelta,
-              scrollLeft,
-              positionItem,
-              itemPositions,
-            })
-          update({
-            event: 'scroll',
-            ...fixIndex({
-              index: Math.floor(indexDelta / slidesPerPage),
-              indexDelta,
-            }),
-          })
-        }
-      })
+      element?.addEventListener('scrollend', onScrollEnd)
     } else {
       element?.addEventListener('scroll', onScrollFn)
     }
@@ -335,7 +334,11 @@ export function createSnapSlider({
     }
   }
   const destroy = () => {
-    element?.removeEventListener('scroll', onScrollFn)
+    if ('onscrollend' in window) {
+      element?.removeEventListener('scrollend', onScrollEnd)
+    } else {
+      element?.removeEventListener('scroll', onScrollFn)
+    }
     window.removeEventListener('resize', onResizeFn)
   }
   const goNext = () => {
