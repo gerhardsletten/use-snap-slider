@@ -1,6 +1,6 @@
 {
   "name": "use-snap-slider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React hook to manage css snap sliders",
   "type": "module",
   "main": "./dist/use-snap-slider.cjs",
