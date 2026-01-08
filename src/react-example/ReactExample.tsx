@@ -10,7 +10,6 @@ import { TSnapSliderOptions } from '../../lib/snap-slider'
 
 type TWidthOption = 'full' | 'half' | 'third'
 
-const countOptions = [1, 2, 3, 4]
 const widthOptions: TWidthOption[] = ['full', 'half', 'third'] as const
 
 function isWidthOption(x: string): x is TWidthOption {
@@ -35,6 +34,11 @@ function ReactExample() {
   if (scrollTimeThrottleParam && !isNaN(parseInt(scrollTimeThrottleParam))) {
     scrollTimeThrottle = parseInt(scrollTimeThrottleParam)
   }
+  let debug = false
+  const debugParam = searchParams.get('debug')
+  if (debugParam === '1') {
+    debug = true
+  }
 
   return (
     <div className="grid grid-cols-1 gap-4 md:flex items-start">
@@ -51,6 +55,7 @@ function ReactExample() {
                 onChange={() => {
                   setSearchParams({
                     width: w,
+                    debugParam: `${debugParam}`,
                     scrollTimeThrottle: `${scrollTimeThrottleParam}`,
                     count: `${count}`,
                   })
@@ -71,6 +76,7 @@ function ReactExample() {
             onChange={(event) => {
               setSearchParams({
                 count: event.target.value,
+                debugParam: `${debugParam}`,
                 width,
                 scrollTimeThrottle: `${scrollTimeThrottleParam}`,
               })
@@ -90,6 +96,7 @@ function ReactExample() {
             onChange={(event) => {
               setSearchParams({
                 scrollTimeThrottle: event.target.value,
+                debugParam: `${debugParam}`,
                 width,
                 count: `${count}`,
               })
@@ -98,6 +105,26 @@ function ReactExample() {
             className="input"
           />
         </div>
+        <fieldset className="input-group">
+          <legend className="label">Debug</legend>
+          <label className="flex gap-2">
+            <input
+              type="checkbox"
+              checked={debug}
+              onChange={(event) => {
+                setSearchParams({
+                  count: `${count}`,
+                  width,
+                  debug: event.target.checked ? '1' : '',
+                  scrollTimeThrottle: `${scrollTimeThrottleParam}`,
+                })
+              }}
+              id="pages-input"
+              className="input"
+            />
+            Debug to console
+          </label>
+        </fieldset>
       </nav>
       <div className=" flex-1">
         <Slider
@@ -105,7 +132,7 @@ function ReactExample() {
           width={width}
           options={{
             scrollTimeThrottle,
-            debug: true,
+            debug,
             scrollListenerThreshold: 30,
           }}
         />

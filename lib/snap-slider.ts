@@ -279,7 +279,39 @@ export function createSnapSlider({
     element = _el
     updateIndexDelta()
     calculate()
-    element?.addEventListener('scroll', onScrollFn)
+
+    if ('onscrollend' in window) {
+      element?.addEventListener('scrollend', (event) => {
+        if (element) {
+          const scrollLeft = element.scrollLeft
+          const positionItem = itemPositions.reduce((prev, curr) => {
+            return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
+              ? curr
+              : prev
+          })
+          const indexDelta = itemPositions.findIndex((x) => x === positionItem)
+          const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
+          prevIndexDelta = indexDelta
+          debug &&
+            console.log('onScrollEnd', {
+              pxLeftScrolling,
+              indexDelta,
+              scrollLeft,
+              positionItem,
+              itemPositions,
+            })
+          update({
+            event: 'scroll',
+            ...fixIndex({
+              index: Math.floor(indexDelta / slidesPerPage),
+              indexDelta,
+            }),
+          })
+        }
+      })
+    } else {
+      element?.addEventListener('scroll', onScrollFn)
+    }
     window.addEventListener('resize', onResizeFn)
   }
   _element && setElement(_element)
