@@ -1,3 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@utility label {
+  @apply flex has-[input]:font-normal font-bold gap-1 items-center;
+  & input {
+    @apply size-4;
+  }
+}
+@utility input-group {
+  @apply p-2 border border-slate-300 rounded grid grid-cols-1 gap-1;
+}
+@utility input {
+  @apply p-2 border border-slate-300 rounded bg-white;
+}

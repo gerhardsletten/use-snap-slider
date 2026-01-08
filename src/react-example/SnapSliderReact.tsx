@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react'
 import { useSnapSlider } from '../../lib/use-snap-slider'
 import { makeArray } from '../helpers/utils'
 import { SnapSlider, paginaBtnClass } from '../shared/SnapSlider'
+import { TSnapSliderOptions } from '../../lib/snap-slider'
 
 export const SnapSliderReact: React.FC<{
   children: React.ReactNode
@@ -11,8 +12,7 @@ export const SnapSliderReact: React.FC<{
   className?: string
   onChangeIndex?: (index: number) => void
   countHash?: string
-  debug?: boolean
-  circular?: boolean
+  options?: TSnapSliderOptions
 }> = ({
   children,
   className,
@@ -20,8 +20,7 @@ export const SnapSliderReact: React.FC<{
   index: _index,
   onChangeIndex,
   countHash,
-  circular,
-  debug,
+  options,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const {
@@ -34,7 +33,7 @@ export const SnapSliderReact: React.FC<{
     jumpTo,
     count,
     countDelta,
-  } = useSnapSlider(ref, _count, _index, circular, countHash)
+  } = useSnapSlider(ref, _count, _index, countHash, options)
   const refInputIndex = useRef(_index)
   const refIndex = useRef(index)
   useEffect(() => {
@@ -53,7 +52,8 @@ export const SnapSliderReact: React.FC<{
     refIndex.current = index
   }, [index, _index, jumpTo, onChangeIndex])
   const pages = makeArray(count)
-  debug && console.log('render', { index, indexDelta, count, countDelta })
+  options?.debug &&
+    console.log('render', { index, indexDelta, count, countDelta })
   return (
     <SnapSlider
       className={className}

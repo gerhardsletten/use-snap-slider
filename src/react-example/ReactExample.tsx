@@ -5,170 +5,145 @@ import { SnapSliderReact } from './SnapSliderReact'
 import { SnapSliderItem } from '../shared/SnapSlider'
 import { Slide } from '../shared/Slide'
 import { makeArray } from '../helpers/utils'
+import { useSearchParams } from 'react-router'
+import { TSnapSliderOptions } from '../../lib/snap-slider'
 
-interface TSnapSliderSlides {
-  count: number
-  countHash?: string
+type TWidthOption = 'full' | 'half' | 'third'
+
+const countOptions = [1, 2, 3, 4]
+const widthOptions: TWidthOption[] = ['full', 'half', 'third'] as const
+
+function isWidthOption(x: string): x is TWidthOption {
+  // widen formats to string[] so indexOf(x) works
+  return (widthOptions as readonly string[]).indexOf(x) >= 0
 }
-
-interface TSnapSliderExample {
-  name: string
-  description?: string
-  cssClass: string
-  circular: boolean
-  slides: TSnapSliderSlides[]
-}
-
-const examples: TSnapSliderExample[] = [
-  {
-    name: 'Example 1 - responsive width for slides',
-    description:
-      'Dot navigation should updated when the with of the screen changes',
-    cssClass: 'w-1/2 md:w-1/3 lg:w-1/4',
-    circular: false,
-    slides: [
-      {
-        count: 12,
-      },
-    ],
-  },
-  {
-    name: 'Example 2 - rounded up index for dot navigation',
-    description:
-      'Showing 8 slides with 1/3 width will not fill 3 full pages, so when scrolled to the end of slides, index will be rounded up to last page',
-    cssClass: 'w-1/3',
-    circular: false,
-    slides: [
-      {
-        count: 8,
-      },
-    ],
-  },
-  {
-    name: 'Example 3 - handling of external filter / change of slide-count',
-    description:
-      "Change in filter moves index to 0 since 'use-snap-slider' does this when count changes. But for if 2 filters have the same count, you will need to pass a countHash (see next example)",
-    cssClass: 'w-1/3',
-    circular: false,
-    slides: [
-      {
-        count: 8,
-      },
-      {
-        count: 10,
-      },
-      {
-        count: 7,
-      },
-      {
-        count: 7,
-      },
-    ],
-  },
-  {
-    name: 'Example 4 - handling of external filter / change of slide-count (counthash)',
-    description:
-      'A custom counthash is used to distinguish filter with same count.',
-    cssClass: 'w-1/3',
-    circular: false,
-    slides: [
-      {
-        count: 7,
-        countHash: 'category-1',
-      },
-      {
-        count: 7,
-        countHash: 'category-2',
-      },
-    ],
-  },
-  {
-    name: 'Example 5 - circular',
-    description: 'Prev / next button with slide to the start / end.',
-    cssClass: 'w-1/3',
-    circular: true,
-    slides: [
-      {
-        count: 7,
-        countHash: 'category-1',
-      },
-      {
-        count: 7,
-        countHash: 'category-2',
-      },
-    ],
-  },
-  {
-    name: 'Example 6 - full width',
-    cssClass: 'w-full',
-    circular: false,
-    slides: [
-      {
-        count: 4,
-      },
-      {
-        count: 2,
-        countHash: 'category-1',
-      },
-      {
-        count: 2,
-        countHash: 'category-2',
-      },
-    ],
-  },
-]
 
 function ReactExample() {
-  const list = examples.filter((item, i) => i < 10)
+  const [searchParams, setSearchParams] = useSearchParams()
+  let count = 10
+  const countParam = searchParams.get('count')
+  if (countParam && !isNaN(parseInt(countParam))) {
+    count = parseInt(countParam)
+  }
+  let width: TWidthOption = 'full'
+  const widthParam = searchParams.get('width')
+  if (widthParam && isWidthOption(widthParam)) {
+    width = widthParam
+  }
+  let scrollTimeThrottle = 500
+  const scrollTimeThrottleParam = searchParams.get('scrollTimeThrottle')
+  if (scrollTimeThrottleParam && !isNaN(parseInt(scrollTimeThrottleParam))) {
+    scrollTimeThrottle = parseInt(scrollTimeThrottleParam)
+  }
+
   return (
-    <div>
-      {list.map((data, i) => (
-        <Slider key={i} data={data} />
-      ))}
+    <div className="grid grid-cols-1 gap-4 md:flex items-start">
+      <nav className="grid grid-cols-1 gap-2 border-black border p-2 py-4 rounded">
+        <fieldset className="input-group">
+          <legend className="label">Width:</legend>
+          {widthOptions.map((w) => (
+            <label key={w} className="label">
+              <input
+                type="radio"
+                value={w}
+                className=""
+                checked={w === width}
+                onChange={() => {
+                  setSearchParams({
+                    width: w,
+                    scrollTimeThrottle: `${scrollTimeThrottleParam}`,
+                    count: `${count}`,
+                  })
+                }}
+              />
+              {w}
+            </label>
+          ))}
+        </fieldset>
+        <div className="input-group">
+          <label htmlFor="pages-input" className="label">
+            Count pages
+          </label>
+          <input
+            type="number"
+            min={1}
+            value={count}
+            onChange={(event) => {
+              setSearchParams({
+                count: event.target.value,
+                width,
+                scrollTimeThrottle: `${scrollTimeThrottleParam}`,
+              })
+            }}
+            id="pages-input"
+            className="input"
+          />
+        </div>
+        <div className="input-group">
+          <label htmlFor="scrolltime-input" className="label">
+            Scroll time throttle
+          </label>
+          <input
+            type="number"
+            min={1}
+            value={scrollTimeThrottle}
+            onChange={(event) => {
+              setSearchParams({
+                scrollTimeThrottle: event.target.value,
+                width,
+                count: `${count}`,
+              })
+            }}
+            id="scrolltime-input"
+            className="input"
+          />
+        </div>
+      </nav>
+      <div className=" flex-1">
+        <Slider
+          count={count}
+          width={width}
+          options={{
+            scrollTimeThrottle,
+            debug: true,
+            scrollListenerThreshold: 30,
+          }}
+        />
+      </div>
     </div>
   )
 }
 
-const Slider: React.FC<{
-  data: TSnapSliderExample
-}> = ({ data }) => {
-  const { name, cssClass, slides, circular, description } = data
-  const [slideNum, setSlideNum] = useState<number>(0)
-  const slide = slides[slideNum]
-  const slideItems = makeArray(slide.count)
+const Slider = ({
+  count,
+  width,
+  options,
+}: {
+  count: number
+  width: TWidthOption
+  options?: TSnapSliderOptions
+}) => {
+  const slideItems = makeArray(count)
   return (
-    <div className="mb-4">
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <h2 className="text-2xl font-bold">{name}</h2>
-        {slides.length > 1 && (
-          <select
-            value={slideNum}
-            onChange={(event) => {
-              setSlideNum(Number(event.target.value))
-            }}
-          >
-            {slides.map((number, i) => (
-              <option key={i} value={i}>
-                Slides {slides[i].count}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-      {description && <p className="mb-4 -mt-4">{description}</p>}
-      <SnapSliderReact
-        count={slideItems.length}
-        circular={circular}
-        countHash={slide.countHash}
-        className="-mx-2"
-      >
-        {slideItems.map((slide, j) => (
-          <SnapSliderItem className={classNames('px-2', cssClass)} key={j}>
-            <Slide>{slide + 1}</Slide>
-          </SnapSliderItem>
-        ))}
-      </SnapSliderReact>
-    </div>
+    <SnapSliderReact
+      count={slideItems.length}
+      options={options}
+      countHash={`${count}-${width}`}
+      className="-mx-2"
+    >
+      {slideItems.map((slide, j) => (
+        <SnapSliderItem
+          className={classNames('px-2', {
+            'w-full': width === 'full',
+            'w-1/2': width === 'half',
+            'w-1/3': width === 'third',
+          })}
+          key={j}
+        >
+          <Slide>{slide + 1}</Slide>
+        </SnapSliderItem>
+      ))}
+    </SnapSliderReact>
   )
 }
 

@@ -28,14 +28,20 @@ export interface TSnapSliderStateFull extends TSnapSliderState {
 
 export type TSnapListner = (params: TSnapSliderStateFull) => void
 
-export interface TSnapSliderParams
-  extends Omit<TSnapSliderStateUpdate, 'event'> {
-  element: HTMLElement | null
-  itemSelector?: string
-  initalSubscriptionPublish?: boolean
+export type TSnapSliderOptions = {
   circular?: boolean
   debug?: boolean
+  scrollTimeThrottle?: number
+  resizeTimeThrottle?: number
+  scrollListenerThreshold?: number
 }
+
+export type TSnapSliderParams = Omit<TSnapSliderStateUpdate, 'event'> &
+  TSnapSliderOptions & {
+    element: HTMLElement | null
+    itemSelector?: string
+    initalSubscriptionPublish?: boolean
+  }
 
 export type TSnapSliderJumpToFn = (
   index?: number,
@@ -64,6 +70,9 @@ export function createSnapSlider({
   initalSubscriptionPublish = true,
   itemSelector = ':scope > *',
   debug,
+  scrollTimeThrottle = 500,
+  resizeTimeThrottle = 500,
+  scrollListenerThreshold = 2,
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index
   let state: TSnapSliderState = {
@@ -238,7 +247,15 @@ export function createSnapSlider({
           const indexDelta = itemPositions.findIndex((x) => x === positionItem)
           const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
           prevIndexDelta = indexDelta
-          if (pxLeftScrolling < 2) {
+          debug &&
+            console.log('onScroll', {
+              pxLeftScrolling,
+              indexDelta,
+              scrollLeft,
+              positionItem,
+              itemPositions,
+            })
+          if (pxLeftScrolling < scrollListenerThreshold) {
             update({
               event: 'scroll',
               ...fixIndex({
@@ -253,8 +270,8 @@ export function createSnapSlider({
       ticking = true
     }
   }
-  const onScrollFn = throttle(onScroll, 500)
-  const onResizeFn = throttle(calculate, 500)
+  const onScrollFn = throttle(onScroll, scrollTimeThrottle)
+  const onResizeFn = throttle(calculate, resizeTimeThrottle)
   function setElement(_el: HTMLElement) {
     if (element) {
       destroy()

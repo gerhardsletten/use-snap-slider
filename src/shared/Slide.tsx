@@ -7,7 +7,7 @@ export const Slide: React.FC<{
 }> = ({ children, className }) => (
   <div
     className={classnames(
-      'w-full h-[200px] rounded-md flex items-center justify-center bg-red-500 text-white text-2xl font-bold',
+      'w-full h-[200px] rounded-md flex items-center justify-center bg-red-500 text-white text-2xl font-bold min-h-[400px]',
       className
     )}
   >

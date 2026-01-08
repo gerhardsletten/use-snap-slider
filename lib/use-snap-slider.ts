@@ -1,7 +1,8 @@
-import { type MutableRefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import {
   createSnapSlider,
   TSnapSliderJumpToFn,
+  TSnapSliderOptions,
   type TSnapSliderStateFull,
 } from './snap-slider'
 
@@ -12,12 +13,11 @@ export interface TUseSnapSlider extends TSnapSliderStateFull {
 }
 
 export function useSnapSlider(
-  ref: MutableRefObject<HTMLDivElement | null>,
+  ref: RefObject<HTMLDivElement | null>,
   count: number = 1,
   index: number = 0,
-  circular = false,
   countHash?: string | number,
-  debug?: boolean
+  options?: TSnapSliderOptions
 ): TUseSnapSlider {
   const [, forceUpdate] = useState<number>(0)
   const mountedRef = useRef<boolean>(false)
@@ -27,9 +27,8 @@ export function useSnapSlider(
       element: ref.current,
       count,
       index,
-      circular,
       initalSubscriptionPublish: false,
-      debug,
+      ...options,
     })
   )
   const result = observer.getState()
