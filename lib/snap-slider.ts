@@ -46,7 +46,7 @@ export type TSnapSliderParams = Omit<TSnapSliderStateUpdate, 'event'> &
 export type TSnapSliderJumpToFn = (
   index?: number,
   indexDelta?: number,
-  event?: TSnapListnerEvent
+  event?: TSnapListnerEvent,
 ) => void
 
 export interface TSnapSlider {
@@ -153,7 +153,7 @@ export function createSnapSlider({
     let indexDeltaDirty = false
     type TSnapSliderStateUpdateKey = keyof typeof params
     const keys: TSnapSliderStateUpdateKey[] = Object.keys(
-      params
+      params,
     ) as Array<TSnapSliderStateUpdateKey>
     state['event'] = params['event']
     keys.forEach((key) => {
@@ -312,24 +312,28 @@ export function createSnapSlider({
   const jumpTo: TSnapSliderJumpToFn = function (
     index,
     indexDelta,
-    event = 'goto'
+    event = 'goto',
   ) {
+    let nextIndex: TSnapListnerStateIndex = {
+      index: 0,
+      indexDelta: 0,
+    }
     if (indexDelta !== undefined) {
-      update({
-        event,
-        ...fixIndex({
-          index: Math.floor(indexDelta / slidesPerPage),
-          indexDelta,
-        }),
-      })
+      nextIndex = {
+        index: Math.floor(indexDelta / slidesPerPage),
+        indexDelta,
+      }
     }
     if (index !== undefined) {
+      nextIndex = {
+        index,
+        indexDelta: index * slidesPerPage,
+      }
+    }
+    if (!isNaN(nextIndex.index) && !isNaN(nextIndex.indexDelta)) {
       update({
         event,
-        ...fixIndex({
-          index,
-          indexDelta: index * slidesPerPage,
-        }),
+        ...fixIndex(nextIndex),
       })
     }
   }
@@ -348,8 +352,8 @@ export function createSnapSlider({
       indexDelta + slidesPerPage <= last
         ? indexDelta + slidesPerPage
         : circular && indexDelta === last
-        ? 0
-        : last
+          ? 0
+          : last
     jumpTo(undefined, next)
   }
   const goPrev = () => {
@@ -359,8 +363,8 @@ export function createSnapSlider({
       indexDelta - slidesPerPage >= 0
         ? indexDelta - slidesPerPage
         : circular && indexDelta === 0
-        ? last
-        : 0
+          ? last
+          : 0
     jumpTo(undefined, next)
   }
   return {

@@ -1,6 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from 'react'
 import {
   createSnapSlider,
+  TSnapSlider,
   TSnapSliderJumpToFn,
   TSnapSliderOptions,
   type TSnapSliderStateFull,
@@ -10,6 +11,7 @@ export interface TUseSnapSlider extends TSnapSliderStateFull {
   jumpTo: TSnapSliderJumpToFn
   goNext: () => void
   goPrev: () => void
+  observer: TSnapSlider
 }
 
 export function useSnapSlider(
@@ -17,7 +19,7 @@ export function useSnapSlider(
   count: number = 1,
   index: number = 0,
   countHash?: string | number,
-  options?: TSnapSliderOptions
+  options?: TSnapSliderOptions,
 ): TUseSnapSlider {
   const [, forceUpdate] = useState<number>(0)
   const mountedRef = useRef<boolean>(false)
@@ -29,7 +31,7 @@ export function useSnapSlider(
       index,
       initalSubscriptionPublish: false,
       ...options,
-    })
+    }),
   )
   const result = observer.getState()
   useEffect(() => {
@@ -57,5 +59,6 @@ export function useSnapSlider(
     jumpTo: observer.jumpTo,
     goNext: observer.goNext,
     goPrev: observer.goPrev,
+    observer,
   }
 }
