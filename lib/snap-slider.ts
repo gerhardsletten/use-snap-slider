@@ -57,7 +57,7 @@ export interface TSnapSlider {
   goPrev: () => void
   subscribe: (fn: TSnapListner) => () => void
   setElement: (el: HTMLElement) => void
-  calculate: () => void
+  calculate: (forceUpdate?: boolean) => void
 }
 
 export function createSnapSlider({
@@ -148,8 +148,8 @@ export function createSnapSlider({
       nextEnabled: circular || countDelta - slidesPerPage > indexDelta,
     }
   }
-  function update(params: TSnapSliderStateUpdate) {
-    let dirty = false
+  function update(params: TSnapSliderStateUpdate, forceUpdate = false) {
+    let dirty = forceUpdate
     let indexDeltaDirty = false
     type TSnapSliderStateUpdateKey = keyof typeof params
     const keys: TSnapSliderStateUpdateKey[] = Object.keys(
@@ -182,7 +182,7 @@ export function createSnapSlider({
       indexDelta,
     }
   }
-  function calculate() {
+  function calculate(forceUpdate = false) {
     if (element) {
       let contentWidth = 0
       let itemWidth = 0
@@ -207,16 +207,21 @@ export function createSnapSlider({
 
       if (!isNaN(count)) {
         // if element not mounted / hidden not update
-        update({
-          event: 'inital',
-          count,
-          countDelta,
-          ...resetIndexMayby,
-        })
+        update(
+          {
+            event: 'inital',
+            count,
+            countDelta,
+            ...resetIndexMayby,
+          },
+          forceUpdate,
+        )
         debug &&
           console.log('update count', {
             count,
             countDelta,
+            index,
+            indexDelta,
             itemPositions,
             slidesPerPage,
             clientWidth: element.clientWidth,
@@ -335,6 +340,10 @@ export function createSnapSlider({
         event,
         ...fixIndex(nextIndex),
       })
+    } else {
+      if (debug) {
+        console.log('catch', nextIndex)
+      }
     }
   }
   const destroy = () => {
