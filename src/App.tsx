@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router'
-import { RouterProvider, Link, NavLink, Outlet } from 'react-router'
+import { RouterProvider, NavLink, Outlet } from 'react-router'
 
 import ReactExample from './react-example/ReactExample'
 import VanillaExample from './vanilla-example/VanillaExample'

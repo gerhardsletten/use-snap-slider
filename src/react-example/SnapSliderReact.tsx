@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react'
 import { useSnapSlider } from '../../lib/use-snap-slider'
 import { makeArray } from '../helpers/utils'
 import { SnapSlider, paginaBtnClass } from '../shared/SnapSlider'
-import { TSnapSliderOptions } from '../../lib/snap-slider'
+import { type TSnapSliderOptions } from '../../lib/snap-slider'
 
 export const SnapSliderReact: React.FC<{
   children: React.ReactNode

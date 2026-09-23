@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import classNames from 'classnames'
 
 import { SnapSliderReact } from './SnapSliderReact'
@@ -6,7 +5,7 @@ import { SnapSliderItem } from '../shared/SnapSlider'
 import { Slide } from '../shared/Slide'
 import { makeArray } from '../helpers/utils'
 import { useSearchParams } from 'react-router'
-import { TSnapSliderOptions } from '../../lib/snap-slider'
+import { type TSnapSliderOptions } from '../../lib/snap-slider'
 
 type TWidthOption = 'full' | 'half' | 'third'
 

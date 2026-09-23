@@ -205,7 +205,7 @@ export function createSnapSlider({
             }
           : {}
 
-      if (!isNaN(count)) {
+      if (Number.isFinite(count)) {
         // if element not mounted / hidden not update
         update(
           {
