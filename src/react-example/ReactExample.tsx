@@ -28,7 +28,7 @@ function ReactExample() {
   if (widthParam && isWidthOption(widthParam)) {
     width = widthParam
   }
-  let scrollTimeThrottle = 500
+  let scrollTimeThrottle = 50
   const scrollTimeThrottleParam = searchParams.get('scrollTimeThrottle')
   if (scrollTimeThrottleParam && !isNaN(parseInt(scrollTimeThrottleParam))) {
     scrollTimeThrottle = parseInt(scrollTimeThrottleParam)
@@ -132,7 +132,6 @@ function ReactExample() {
           options={{
             scrollTimeThrottle,
             debug,
-            scrollListenerThreshold: 30,
           }}
         />
       </div>

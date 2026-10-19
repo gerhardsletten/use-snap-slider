@@ -33,6 +33,7 @@ export type TSnapSliderOptions = {
   debug?: boolean
   scrollTimeThrottle?: number
   resizeTimeThrottle?: number
+  /** @deprecated No longer used, the index updates while scrolling */
   scrollListenerThreshold?: number
 }
 
@@ -70,9 +71,8 @@ export function createSnapSlider({
   initalSubscriptionPublish = true,
   itemSelector = ':scope > *',
   debug,
-  scrollTimeThrottle = 500,
+  scrollTimeThrottle = 50,
   resizeTimeThrottle = 500,
-  scrollListenerThreshold = 2,
 }: TSnapSliderParams): TSnapSlider {
   let initalIndex: number | undefined = index
   let state: TSnapSliderState = {
@@ -232,8 +232,8 @@ export function createSnapSlider({
       }
     }
   }
-  function onScrollEnd() {
-    if (element) {
+  function updateFromScrollPosition(source: 'onScroll' | 'onScrollEnd') {
+    if (element && itemPositions.length > 0) {
       const scrollLeft = element.scrollLeft
       const positionItem = itemPositions.reduce((prev, curr) => {
         return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
@@ -241,11 +241,9 @@ export function createSnapSlider({
           : prev
       })
       const indexDelta = itemPositions.findIndex((x) => x === positionItem)
-      const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
       prevIndexDelta = indexDelta
       debug &&
-        console.log('onScrollEnd', {
-          pxLeftScrolling,
+        console.log(source, {
           indexDelta,
           scrollLeft,
           positionItem,
@@ -260,40 +258,21 @@ export function createSnapSlider({
       })
     }
   }
+  function onScrollEnd() {
+    muteScrollListner = false
+    updateFromScrollPosition('onScrollEnd')
+  }
   function onScroll() {
     if (element) {
-      const scrollLeft = element.scrollLeft
       if (muteScrollListner) {
-        const leftToScroll = Math.abs(left - scrollLeft)
+        // Programmatic scroll (goto / click) in progress, the state is already
+        // set to the target, so wait until we have reached it
+        const leftToScroll = Math.abs(left - element.scrollLeft)
         if (leftToScroll < 2) {
           muteScrollListner = false
         }
       } else {
-        const positionItem = itemPositions.reduce((prev, curr) => {
-          return Math.abs(curr - scrollLeft) < Math.abs(prev - scrollLeft)
-            ? curr
-            : prev
-        })
-        const indexDelta = itemPositions.findIndex((x) => x === positionItem)
-        const pxLeftScrolling = Math.abs(scrollLeft - positionItem)
-        prevIndexDelta = indexDelta
-        debug &&
-          console.log('onScroll', {
-            pxLeftScrolling,
-            indexDelta,
-            scrollLeft,
-            positionItem,
-            itemPositions,
-          })
-        if (pxLeftScrolling < scrollListenerThreshold) {
-          update({
-            event: 'scroll',
-            ...fixIndex({
-              index: Math.floor(indexDelta / slidesPerPage),
-              indexDelta,
-            }),
-          })
-        }
+        updateFromScrollPosition('onScroll')
       }
     }
   }
@@ -306,10 +285,9 @@ export function createSnapSlider({
     element = _el
     updateIndexDelta()
     calculate()
+    element?.addEventListener('scroll', onScrollFn)
     if ('onscrollend' in window) {
       element?.addEventListener('scrollend', onScrollEnd)
-    } else {
-      element?.addEventListener('scroll', onScrollFn)
     }
     window.addEventListener('resize', onResizeFn)
   }
@@ -347,10 +325,9 @@ export function createSnapSlider({
     }
   }
   const destroy = () => {
+    element?.removeEventListener('scroll', onScrollFn)
     if ('onscrollend' in window) {
       element?.removeEventListener('scrollend', onScrollEnd)
-    } else {
-      element?.removeEventListener('scroll', onScrollFn)
     }
     window.removeEventListener('resize', onResizeFn)
   }

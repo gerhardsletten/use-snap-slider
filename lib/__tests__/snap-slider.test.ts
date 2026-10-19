@@ -382,6 +382,35 @@ describe('snap-slider', () => {
     unmock()
     unsubscribe()
   })
+  it('Updates index while scrolling, before scroll ends', async () => {
+    document.body.innerHTML = makeSlides(TEST_ID, 4)
+    const element: HTMLElement = screen.getByTestId(TEST_ID)
+    const unmock = mockHelper(200, 200)
+    const { subscribe } = createSnapSlider({ element })
+    let states: TSnapSliderStateFull[] = []
+    const unsubscribe = subscribe((state) => {
+      states.push(state)
+    })
+    await waitFor(() => {
+      expect(states.length).toEqual(1)
+    })
+    // Past the middle of the second slide, but not snapped yet
+    element.scrollLeft = 120
+    fireEvent.scroll(element)
+    await waitFor(() => {
+      expect(states.length).toEqual(2)
+    })
+    expect(states[1].index).toEqual(1)
+    expect(states[1].event).toEqual('scroll')
+    element.scrollLeft = 390
+    fireEvent.scroll(element)
+    await waitFor(() => {
+      expect(states.length).toEqual(3)
+    })
+    expect(states[2].index).toEqual(2)
+    unmock()
+    unsubscribe()
+  })
   it('Can trigger a scroll after a click (reset muteScrollListner)', async () => {
     document.body.innerHTML = makeSlides(TEST_ID, 2)
     const element: HTMLElement = screen.getByTestId(TEST_ID)
