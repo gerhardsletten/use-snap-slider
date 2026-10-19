@@ -1,9 +1,11 @@
 {
   "extends": "./tsconfig",
   "exclude": [
-    "lib/**/*.spec.ts{,x}",
-    "lib/**/*.test.ts{,x}",
-    "./lib/test-utils"
+    "lib/__tests__",
+    "lib/**/*.spec.ts",
+    "lib/**/*.spec.tsx",
+    "lib/**/*.test.ts",
+    "lib/**/*.test.tsx"
   ],
   "include": ["lib"]
 }

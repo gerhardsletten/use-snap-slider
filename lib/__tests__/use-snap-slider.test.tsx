@@ -1,6 +1,6 @@
+import { describe, it, expect } from 'vitest'
 import React, { useRef, useState } from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import '@testing-library/jest-dom'
 
 import { useSnapSlider } from '../use-snap-slider'
 import { mockHelper, makeArray } from '../../src/helpers/utils'

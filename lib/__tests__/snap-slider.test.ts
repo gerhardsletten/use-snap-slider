@@ -1,5 +1,5 @@
+import { describe, it, expect, vi } from 'vitest'
 import { screen, waitFor, fireEvent } from '@testing-library/dom'
-import '@testing-library/jest-dom'
 import { createSnapSlider, type TSnapSliderStateFull } from '../snap-slider'
 import { makeSlides, mockHelper, resizeWindow } from '../../src/helpers/utils'
 
@@ -304,7 +304,7 @@ describe('snap-slider', () => {
     unsubscribe()
   })
   it('Run calculate on window resize is throttled', async () => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     document.body.innerHTML = makeSlides(TEST_ID, 6)
     const element: HTMLElement = screen.getByTestId(TEST_ID)
     const unmock = mockHelper(600, 300)
@@ -315,7 +315,7 @@ describe('snap-slider', () => {
     const unsubscribe = subscribe((state) => {
       states.push(state)
     })
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(states.length).toEqual(1)
     })
     expect(states[0].count).toEqual(3)
@@ -323,16 +323,16 @@ describe('snap-slider', () => {
     resizeWindow()
     resizeWindow()
     // Move time to trigger timeout throttle
-    jest.advanceTimersByTime(1000)
+    vi.advanceTimersByTime(1000)
     resizeWindow()
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(states.length).toEqual(2)
     })
     expect(states[1].count).toEqual(2)
     unmock()
     unmock2()
     unsubscribe()
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
   it('Reset index if new count is lower that current index', async () => {
     document.body.innerHTML = makeSlides(TEST_ID, 6)
@@ -374,6 +374,7 @@ describe('snap-slider', () => {
     expect(states[0].index).toEqual(0)
     element.scrollLeft = 200
     fireEvent.scroll(element, { target: { scrollX: 200 } })
+    fireEvent(element, new Event('scrollend'))
     await waitFor(() => {
       expect(states.length).toEqual(2)
     })
@@ -406,6 +407,7 @@ describe('snap-slider', () => {
     */
     element.scrollLeft = 0
     fireEvent.scroll(element, { target: { scrollX: 0 } })
+    fireEvent(element, new Event('scrollend'))
     await waitFor(() => {
       expect(states.length).toEqual(3)
     })

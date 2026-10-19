@@ -1,9 +1,9 @@
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { type RefObject, useEffect, useRef, useState } from 'react'
 import {
   createSnapSlider,
-  TSnapSlider,
-  TSnapSliderJumpToFn,
-  TSnapSliderOptions,
+  type TSnapSlider,
+  type TSnapSliderJumpToFn,
+  type TSnapSliderOptions,
   type TSnapSliderStateFull,
 } from './snap-slider'
 
@@ -23,7 +23,6 @@ export function useSnapSlider(
 ): TUseSnapSlider {
   const [, forceUpdate] = useState<number>(0)
   const mountedRef = useRef<boolean>(false)
-  const initRef = useRef<boolean>(false)
   const [observer] = useState(() =>
     createSnapSlider({
       element: ref.current,

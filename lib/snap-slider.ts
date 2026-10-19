@@ -298,7 +298,7 @@ export function createSnapSlider({
     }
   }
   const onScrollFn = throttle(onScroll, scrollTimeThrottle)
-  const onResizeFn = throttle(calculate, resizeTimeThrottle)
+  const onResizeFn = throttle(() => calculate(), resizeTimeThrottle)
   function setElement(_el: HTMLElement) {
     if (element) {
       destroy()
